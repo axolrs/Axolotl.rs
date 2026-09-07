@@ -1,0 +1,19 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: examples/counter.axol - closures capturing state over a while loop.
+
+fn make_counter() -> fn() -> Int
+    var count = 0
+    return fn() -> Int
+        count = count + 1
+        return count
+    end
+end
+
+fn main()
+    let next = make_counter()
+    var i = 0
+    while i < 3 do
+        print(next())
+        i = i + 1
+    end
+end

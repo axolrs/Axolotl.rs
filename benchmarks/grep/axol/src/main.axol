@@ -1,0 +1,192 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/grep/axol/src/main.axol - integer subsequence matcher.
+--
+-- Mirrors ../rust/src/main.rs exactly. Pattern and line lookup is by ID
+-- (avoids Vec<Vec<Int>> moves).
+
+const DEFAULT_WORKLOAD: Int = 200000
+
+fn line_byte(line_id: Int, idx: Int) -> Int
+    if line_id == 0 then
+        if idx == 0 then return 116 end
+        if idx == 1 then return 104 end
+        if idx == 2 then return 101 end
+        if idx == 3 then return 32 end
+        if idx == 4 then return 113 end
+        if idx == 5 then return 117 end
+        if idx == 6 then return 105 end
+        if idx == 7 then return 99 end
+        if idx == 8 then return 107 end
+    end
+    if line_id == 1 then
+        if idx == 0 then return 114 end
+        if idx == 1 then return 117 end
+        if idx == 2 then return 115 end
+        if idx == 3 then return 116 end
+        if idx == 4 then return 32 end
+        if idx == 5 then return 105 end
+        if idx == 6 then return 115 end
+        if idx == 7 then return 32 end
+        if idx == 8 then return 97 end
+    end
+    if line_id == 2 then
+        if idx == 0 then return 97 end
+        if idx == 1 then return 120 end
+        if idx == 2 then return 111 end
+        if idx == 3 then return 108 end
+        if idx == 4 then return 111 end
+        if idx == 5 then return 116 end
+        if idx == 6 then return 108 end
+        if idx == 7 then return 32 end
+    end
+    if line_id == 3 then
+        if idx == 0 then return 108 end
+        if idx == 1 then return 117 end
+        if idx == 2 then return 97 end
+        if idx == 3 then return 32 end
+        if idx == 4 then return 102 end
+        if idx == 5 then return 108 end
+        if idx == 6 then return 97 end
+        if idx == 7 then return 118 end
+        if idx == 8 then return 111 end
+        if idx == 9 then return 114 end
+    end
+    if line_id == 4 then
+        if idx == 0 then return 99 end
+        if idx == 1 then return 97 end
+        if idx == 2 then return 114 end
+        if idx == 3 then return 103 end
+        if idx == 4 then return 111 end
+        if idx == 5 then return 32 end
+        if idx == 6 then return 101 end
+        if idx == 7 then return 99 end
+        if idx == 8 then return 111 end
+    end
+    if line_id == 5 then
+        if idx == 0 then return 110 end
+        if idx == 1 then return 111 end
+        if idx == 2 then return 32 end
+        if idx == 3 then return 114 end
+        if idx == 4 then return 117 end
+        if idx == 5 then return 110 end
+        if idx == 6 then return 116 end
+        if idx == 7 then return 105 end
+        if idx == 8 then return 109 end
+        if idx == 9 then return 101 end
+    end
+    if line_id == 6 then
+        if idx == 0 then return 115 end
+        if idx == 1 then return 117 end
+        if idx == 2 then return 98 end
+        if idx == 3 then return 32 end
+        if idx == 4 then return 50 end
+        if idx == 5 then return 48 end
+        if idx == 6 then return 48 end
+        if idx == 7 then return 109 end
+        if idx == 8 then return 115 end
+    end
+    if line_id == 7 then
+        if idx == 0 then return 115 end
+        if idx == 1 then return 109 end
+        if idx == 2 then return 97 end
+        if idx == 3 then return 114 end
+        if idx == 4 then return 116 end
+        if idx == 5 then return 32 end
+        if idx == 6 then return 99 end
+        if idx == 7 then return 111 end
+        if idx == 8 then return 109 end
+        if idx == 9 then return 112 end
+    end
+    return -1
+end
+
+fn line_len(line_id: Int) -> Int
+    if line_id == 0 then return 9 end
+    if line_id == 1 then return 9 end
+    if line_id == 2 then return 8 end
+    if line_id == 3 then return 10 end
+    if line_id == 4 then return 9 end
+    if line_id == 5 then return 10 end
+    if line_id == 6 then return 9 end
+    if line_id == 7 then return 10 end
+    return 0
+end
+
+fn pat_byte(pat_id: Int, idx: Int) -> Int
+    if pat_id == 0 then
+        if idx == 0 then return 114 end
+        if idx == 1 then return 117 end
+        if idx == 2 then return 115 end
+        if idx == 3 then return 116 end
+    end
+    if pat_id == 1 then
+        if idx == 0 then return 97 end
+        if idx == 1 then return 120 end
+        if idx == 2 then return 111 end
+        if idx == 3 then return 108 end
+    end
+    if pat_id == 2 then
+        if idx == 0 then return 116 end
+        if idx == 1 then return 104 end
+        if idx == 2 then return 101 end
+    end
+    if pat_id == 3 then
+        if idx == 0 then return 99 end
+        if idx == 1 then return 97 end
+        if idx == 2 then return 114 end
+        if idx == 3 then return 103 end
+        if idx == 4 then return 111 end
+    end
+    if pat_id == 4 then
+        if idx == 0 then return 99 end
+        if idx == 1 then return 111 end
+        if idx == 2 then return 109 end
+        if idx == 3 then return 112 end
+    end
+    return -1
+end
+
+fn pat_len(pat_id: Int) -> Int
+    if pat_id == 0 then return 4 end
+    if pat_id == 1 then return 4 end
+    if pat_id == 2 then return 3 end
+    if pat_id == 3 then return 5 end
+    if pat_id == 4 then return 4 end
+    return 0
+end
+
+fn match_pattern(line_id: Int, pat_id: Int) -> Int
+    let llen = line_len(line_id)
+    let plen = pat_len(pat_id)
+    if plen == 0 then return 1 end
+    var i = 0
+    while i < llen do
+        if i + plen > llen then break end
+        var ok = 1
+        var j = 0
+        while j < plen do
+            if line_byte(line_id, i + j) != pat_byte(pat_id, j) then
+                ok = 0
+                break
+            end
+            j = j + 1
+        end
+        if ok == 1 then return 1 end
+        i = i + 1
+    end
+    return 0
+end
+
+fn main()
+    var total_matches = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let line_id = i % 8
+        let pat_id = i % 5
+        if match_pattern(line_id, pat_id) == 1 then
+            total_matches = total_matches + 1
+        end
+        i = i + 1
+    end
+    print("grep: lines=", DEFAULT_WORKLOAD, "matches=", total_matches)
+end

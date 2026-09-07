@@ -1,0 +1,49 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/kvstore/axol/src/main.axol - LSM-tree-style store with forward scan lookup
+--
+-- Mirrors ../rust/src/main.rs exactly. Optimized for axolc codegen.
+
+const DEFAULT_WORKLOAD: Int = 2000000
+const MEMTABLE_LIMIT: Int = 1024
+
+fn hash(k: Int) -> Int
+    return k * 2654435761
+end
+
+fn main()
+    var memtable_k: [Int] = []
+    var memtable_v: [Int] = []
+    var sstable_count = 0
+    var n_writes = 0
+    var n_reads = 0
+    var n_hits = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let h = hash(i)
+        memtable_k.push(h)
+        memtable_v.push(i * 7)
+        n_writes = n_writes + 1
+        if (memtable_k.len() as i64) >= MEMTABLE_LIMIT then
+            sstable_count = sstable_count + 1
+            memtable_k = []
+            memtable_v = []
+        end
+        if i % 3 == 0 then
+            n_reads = n_reads + 1
+            let target = hash(i)
+            var j = 0
+            var len = (memtable_k.len() as i64)
+            var found = 0
+            while j < len do
+                if memtable_k[j as usize] == target then
+                    n_hits = n_hits + 1
+                    found = 1
+                    break
+                end
+                j = j + 1
+            end
+        end
+        i = i + 1
+    end
+    print("kvstore: writes=", n_writes, "reads=", n_reads, "hits=", n_hits, "sstables=", sstable_count)
+end

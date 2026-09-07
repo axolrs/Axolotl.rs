@@ -1,0 +1,117 @@
+{
+    // Project metadata
+    "name": "my-axolotl-project",
+    "version": "0.1.0",
+
+    // Axolotl language edition (the year marker for the language surface,
+    // distinct from the Rust edition in Cargo.toml which is 2024)
+    "language": {
+        "edition": "2026"
+    },
+
+    // Opt into the interpreter / JIT dev mode. When true, `bucket run`
+    // defaults to interpreter mode. CLI flags (`--interpret`, `--jit`,
+    // `--release`) always win.
+    "interpreted_dev_mode": true,
+
+    // Interpreter / JIT tuning (only consulted when interpreted_dev_mode is true)
+    "interpreter": {
+        "mode": "interpret",                 // "interpret" | "jit"
+        "jit_threshold": 100,                // call count before a function is JIT'd
+        "hot_reload": true,                  // watch the project directory
+        "max_memory_mb": 2048,               // memory cap for the runtime
+        "preserve_state": true               // preserve globals across hot reload
+    },
+
+    // User-defined scripts. Same shape as package.json's scripts in
+    // pnpm/bun/npm. Run with `bucket run <name>`.
+    "scripts": {
+        "dev":     "bucket run --watch",
+        "play":    "bucket run",
+        "test":    "bucket test",
+        "bench":   "bucket bench",
+        "release": "bucket build --release",
+        "fmt":     "bucket fmt",
+        "lint":    "bucket lint",
+        "fix":     "bucket fix",
+        "doc":     "bucket doc",
+        "check":   "bucket check",
+        "clean":   "bucket clean",
+        "doctor":  "bucket doctor",
+        "any_custom_script": "echo 'hi from a custom script'"
+    },
+
+    // Native Rust crates. These ARE the Axolotl dependency graph; the
+    // Axolotl compiler reads them via .rmeta and generates calls into
+    // them directly. No parallel "AxolotlWgpu" wrapper crates.
+    "dependencies": {
+        "wgpu":   "^27",
+        "winit":  "^30",
+        "glam":   "^0.30",
+        "serde":  "^1",
+        "tokio":  "^1"
+    },
+
+    // Optional: Axolotl-specific packages (for v2, when Eggbox is online).
+    // For now, "axolotl_packages" is empty; everything is a Rust crate.
+    "axolotl_packages": {},
+
+    // Build configuration
+    "build": {
+        "target": "x86_64-unknown-linux-gnu",
+        "release": {
+            "lto": "thin",
+            "codegen-units": 1,
+            "strip": true
+        },
+        "debug": {
+            "incremental": true
+        }
+    },
+
+    // Pond cache configuration
+    "pond": {
+        "global": "~/.bucket/pond",
+        "project": "./pond",
+        "release_isolated": true              // release builds don't inherit debug artifacts
+    },
+
+    // LSP (Gills / axol-analyzer) configuration
+    "lsp": {
+        "trace": "messages",                  // "off" | "messages" | "verbose"
+        "inlay_hints": {
+            "types": "always",                // "always" | "on_demand" | "never"
+            "parameters": "named_only",
+            "lifetimes": "complex",
+            "borrows": "verbose",
+            "chalk": "minimal"
+        },
+        "completion": {
+            "snippets": true,
+            "auto_import": true,
+            "ai": false
+        },
+        "diagnostics": {
+            "neoten": true,
+            "axolc": true,
+            "experimental_lints": false
+        }
+    },
+
+    // Editor integrations
+    "editors": {
+        "vscode":   { "enabled": true },
+        "zed":      { "enabled": true },
+        "neovim":   { "enabled": true },
+        "intellij": { "enabled": false }
+    },
+
+    // Foreign-language blocks are opt-in. A project with no cblock has
+    // no C build machinery generated. Same for cppblock, rblock, pyblock.
+    "foreign_blocks": {
+        "c":    { "enabled": false, "cc_version": ">=1.0" },
+        "cpp":  { "enabled": false, "cxx_standard": "20" },
+        "rust": { "enabled": false },
+        "py":   { "enabled": false, "python": ">=3.10" }
+    }
+}

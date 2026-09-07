@@ -1,0 +1,23 @@
+name: Long-form Tests
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  full-test-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run full test suite
+        run: cargo test --workspace --no-fail-fast -- --test-threads=4
+      - name: Report test count
+        run: |
+          cargo test --workspace --no-fail-fast 2>&1 | grep -E "test result" | \
+            awk '{sum += $4} END {print "Total tests passed:", sum}' > test_count.txt
+          cat test_count.txt

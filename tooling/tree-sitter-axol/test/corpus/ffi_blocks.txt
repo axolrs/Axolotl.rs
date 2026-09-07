@@ -1,0 +1,88 @@
+==================
+cblock
+==================
+
+cblock
+    #include <stdio.h>
+    int native_add(int a, int b) {
+        return a + b;
+    }
+end
+
+---
+
+(source_file
+  (cblock))
+
+==================
+cppblock
+==================
+
+cppblock
+    #include <iostream>
+    void hello_cpp() {
+        std::cout << "hi" << std::endl;
+    }
+end
+
+---
+
+(source_file
+  (cppblock))
+
+==================
+rblock
+==================
+
+rblock
+    #[inline]
+    pub fn fast_math(x: f32) -> f32 {
+        x.sqrt()
+    }
+end
+
+---
+
+(source_file
+  (rblock))
+
+==================
+pyblock
+==================
+
+pyblock
+    def process(path):
+        return baked(path)
+end
+
+---
+
+(source_file
+  (pyblock))
+
+==================
+use_decl
+==================
+
+use "serde"
+
+---
+
+(source_file
+  (use_declaration
+    (string)))
+
+==================
+use_path
+==================
+
+use std::collections::HashMap
+
+---
+
+(source_file
+  (use_declaration
+    (scoped_identifier
+      (identifier)
+      (identifier)
+      (identifier))))

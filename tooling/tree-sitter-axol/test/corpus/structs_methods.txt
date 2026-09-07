@@ -1,0 +1,349 @@
+==================
+struct_decl
+==================
+
+Point = struct
+    x: Int
+    y: Int
+end
+
+---
+
+(source_file
+  (struct_definition
+    name: (identifier)
+    (field_definition
+      name: (identifier)
+      type: (primitive_type))
+    (field_definition
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+struct_pub_field
+==================
+
+Player = struct
+    pub health: Int
+end
+
+---
+
+(source_file
+  (struct_definition
+    name: (identifier)
+    (field_definition
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+struct_field_default
+==================
+
+Config = struct
+    host: String = "localhost"
+    port: Int = 8080
+end
+
+---
+
+(source_file
+  (struct_definition
+    name: (identifier)
+    (field_definition
+      name: (identifier)
+      type: (primitive_type)
+      default: (string))
+    (field_definition
+      name: (identifier)
+      type: (primitive_type)
+      default: (number
+        (integer)))))
+
+==================
+struct_generic
+==================
+
+Box = struct
+    value: T
+end
+
+---
+
+(source_file
+  (struct_definition
+    name: (identifier)
+    (field_definition
+      name: (identifier)
+      type: (type_identifier))))
+
+==================
+enum_decl
+==================
+
+Color = enum
+    Red
+    Green
+    Blue
+end
+
+---
+
+(source_file
+  (enum_definition
+    name: (identifier)
+    (enum_variant
+      name: (identifier))
+    (enum_variant
+      name: (identifier))
+    (enum_variant
+      name: (identifier))))
+
+==================
+enum_tuple_variant
+==================
+
+Shape = enum
+    Circle(Float)
+    Rect(Float, Float)
+end
+
+---
+
+(source_file
+  (enum_definition
+    name: (identifier)
+    (enum_variant
+      name: (identifier)
+      (primitive_type))
+    (enum_variant
+      name: (identifier)
+      (primitive_type)
+      (primitive_type))))
+
+==================
+enum_struct_variant
+==================
+
+Event = enum
+    Key { code: Int }
+    Move { dx: Int, dy: Int }
+end
+
+---
+
+(source_file
+  (enum_definition
+    name: (identifier)
+    (enum_variant
+      name: (identifier)
+      (field_definition
+        name: (identifier)
+        type: (primitive_type)))
+    (enum_variant
+      name: (identifier)
+      (field_definition
+        name: (identifier)
+        type: (primitive_type))
+      (field_definition
+        name: (identifier)
+        type: (primitive_type)))))
+
+==================
+interface_decl
+==================
+
+Drawable = interface
+    draw(self)
+    area(self) -> Float
+end
+
+---
+
+(source_file
+  (interface_definition
+    name: (identifier)
+    (interface_method
+      name: (identifier)
+      parameters: (parameters
+        (self_parameter)))
+    (interface_method
+      name: (identifier)
+      parameters: (parameters
+        (self_parameter))
+      (return_type
+        (primitive_type)))))
+
+==================
+struct_literal
+==================
+
+fn main()
+    let p = Player { health = 100, name = "Mohi" }
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (struct_expression
+          type: (identifier)
+          (record_field
+            name: (identifier)
+            value: (number
+              (integer)))
+          (record_field
+            name: (identifier)
+            value: (string)))))))
+
+==================
+field_access
+==================
+
+fn main() print(player.health) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (field_expression
+              object: (identifier)
+              field: (identifier))))))))
+
+==================
+field_assign
+==================
+
+fn main()
+    player.health -= 10
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (assignment_statement
+        left: (field_expression
+          object: (identifier)
+          field: (identifier))
+        right: (number
+          (integer))))))
+
+==================
+index_expr
+==================
+
+fn main() print(xs[0]) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (index_expression
+              object: (identifier)
+              index: (number
+                (integer)))))))))
+
+==================
+optional_chain
+==================
+
+fn main() print(user?.name) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (field_expression
+              object: (try_expression
+                value: (identifier))
+              field: (identifier))))))))
+
+==================
+bang_unwrap
+==================
+
+fn main() print(box!) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (unwrap_expression
+              value: (identifier))))))))
+
+==================
+question_try
+==================
+
+fn main() let v = parse(s)? end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (try_expression
+          value: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (identifier))))))))
+
+==================
+spawn_expr
+==================
+
+fn main() spawn work() end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (spawn_expression
+          value: (call_expression
+            function: (identifier)
+            arguments: (arguments)))))))

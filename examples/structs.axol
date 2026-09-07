@@ -1,0 +1,23 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: examples/structs.axol - struct literal, method definition, and self mutation.
+
+Player = struct
+    health: Int
+    name: String
+end
+
+Player.damage = fn(self, amount: Int)
+    self.health = self.health - amount
+end
+
+Player.alive = fn(self) -> Bool
+    return self.health > 0
+end
+
+fn main()
+    let p = Player { health = 100, name = "Mohi" }
+    p:damage(30)
+    print(p.name)
+    print(p.health)
+    print(p:alive())
+end

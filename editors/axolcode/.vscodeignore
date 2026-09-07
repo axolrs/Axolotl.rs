@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+.vscode-test.mjs
+src/**
+out/**
+node_modules/**
+.gitignore
+.npmrc
+.yarnrc
+pnpm-workspace.yaml
+pnpm-lock.yaml
+webpack.config.js
+vsc-extension-quickstart.md
+tsconfig.json
+eslint.config.mjs
+**/*.map
+**/*.ts

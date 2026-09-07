@@ -1,0 +1,54 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build axolc
+        run: cargo build -p axolc --release
+      - name: Build all Rust references
+        run: |
+          cd benchmarks
+          for d in */; do
+            name="${d%/}"
+            [[ "$name" == "README.md" ]] && continue
+            if [ -d "$d/rust" ]; then
+              echo "=== Building $name rust ref ==="
+              (cd "$d/rust" && cargo build --release) || exit 1
+            fi
+          done
+      - name: Run all benchmark harnesses (5% gate)
+        run: |
+          cd benchmarks
+          PASS=0
+          FAIL=0
+          for d in */; do
+            name="${d%/}"
+            [[ "$name" == "README.md" ]] && continue
+            [[ -x "$d/bench/run.sh" ]] || continue
+            echo "=== $name ==="
+            if timeout 120 bash "$d/bench/run.sh"; then
+              PASS=$((PASS + 1))
+            else
+              FAIL=$((FAIL + 1))
+              echo "::error::$name benchmark failed the 5% gate"
+            fi
+          done
+          echo ""
+          echo "Benchmark results: PASS=$PASS FAIL=$FAIL"
+          if [ "$FAIL" -gt 0 ]; then
+            exit 1
+          fi

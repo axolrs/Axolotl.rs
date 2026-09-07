@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: true
+  workerd: false
+minimumReleaseAgeExclude:
+  - '@codemirror/state@6.7.4'

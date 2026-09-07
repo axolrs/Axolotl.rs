@@ -1,0 +1,143 @@
+{
+  "name": "axolcode",
+  "displayName": "AxolCode",
+  "description": "Language Support for Axolotl Programming Language",
+  "version": "0.1.0",
+  "license": "MIT",
+  "publisher": "axolrs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axolrs/axolotl",
+    "directory": "editors/axolcode"
+  },
+  "engines": {
+    "vscode": "^1.136.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:axol",
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "axol",
+        "aliases": [
+          "Axolotl",
+          "axol"
+        ],
+        "extensions": [
+          ".axol"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "axol",
+        "scopeName": "source.axol",
+        "path": "./syntaxes/axol.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "axolcode.run",
+        "title": "Axolotl: Run Project (bucket run)"
+      },
+      {
+        "command": "axolcode.build",
+        "title": "Axolotl: Build Project (Release)"
+      },
+      {
+        "command": "axolcode.test",
+        "title": "Axolotl: Run Tests (bucket test)"
+      },
+      {
+        "command": "axolcode.fmt",
+        "title": "Axolotl: Format Project (bucket fmt)"
+      },
+      {
+        "command": "axolcode.lint",
+        "title": "Axolotl: Lint Project (bucket lint)"
+      },
+      {
+        "command": "axolcode.fix",
+        "title": "Axolotl: Auto-Fix Project (bucket fix)"
+      },
+      {
+        "command": "axolcode.doc",
+        "title": "Axolotl: Build Documentation (bucket doc)"
+      },
+      {
+        "command": "axolcode.interpretedRun",
+        "title": "Axolotl: Run Interpreted (bucket run --interpret)"
+      },
+      {
+        "command": "axolcode.interpretedREPL",
+        "title": "Axolotl: Open REPL (axol-hot-runner repl)"
+      },
+      {
+        "command": "axolcode.showGeneratedRust",
+        "title": "Axolotl: Show Generated Rust for Active File"
+      },
+      {
+        "command": "axolcode.buildStatus",
+        "title": "Axolotl: Toggle Build Status Item"
+      }
+    ],
+    "configuration": {
+      "title": "AxolCode",
+      "properties": {
+        "axolcode.server.path": {
+          "type": "string",
+          "default": "axol-analyzer",
+          "description": "Command that starts the Gills (axol-analyzer) language server. May include quoted arguments. Without arguments the server serves LSP over stdio."
+        },
+        "axolcode.server.fallbackCommand": {
+          "type": "string",
+          "default": "bucket gills --stdio",
+          "description": "Command used when axolcode.server.path cannot be found on PATH."
+        },
+        "axolcode.run.saveOnRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Save all editors before running the Axolotl: Run Project command."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "^1.136.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "eslint": "^10.5.0",
+    "ts-loader": "^9.6.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^10.1.1"
+  }
+}

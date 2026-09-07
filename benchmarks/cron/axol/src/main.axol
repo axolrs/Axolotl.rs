@@ -1,0 +1,104 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/cron/axol/src/main.axol - 5-field cron scheduler with bitmask lookup.
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses `and` keyword for combined conditions.
+
+const DEFAULT_WORKLOAD: Int = 20000000
+
+fn main()
+    var pow2: [Int] = []
+    var p = 1
+    var i = 0
+    while i < 64 do
+        pow2.push(p)
+        p = p * 2
+        i = i + 1
+    end
+    var mask_min = 0
+    var mask_hour = 0
+    var mask_day = 0
+    var mask_month = 0
+    var mask_dow = 0
+    i = 0
+    while i < 60 do
+        mask_min = mask_min | pow2[i as usize]
+        i = i + 1
+    end
+    i = 0
+    while i < 24 do
+        mask_hour = mask_hour | pow2[i as usize]
+        i = i + 1
+    end
+    i = 0
+    while i < 32 do
+        mask_day = mask_day | pow2[i as usize]
+        i = i + 1
+    end
+    i = 0
+    while i < 13 do
+        mask_month = mask_month | pow2[i as usize]
+        i = i + 1
+    end
+    i = 0
+    while i < 7 do
+        mask_dow = mask_dow | pow2[i as usize]
+        i = i + 1
+    end
+    let m_one = 1
+    let e0_min = mask_min
+    let e0_hour = mask_hour
+    let e0_day = mask_day
+    let e0_month = mask_month
+    let e0_dow = mask_dow
+    let e1_min = m_one
+    let e1_hour = mask_hour
+    let e1_day = mask_day
+    let e1_month = mask_month
+    let e1_dow = mask_dow
+    let e2_min = m_one
+    let e2_hour = m_one
+    let e2_day = mask_day
+    let e2_month = mask_month
+    let e2_dow = mask_dow
+    let e3_min = m_one
+    let e3_hour = m_one
+    let e3_day = m_one
+    let e3_month = mask_month
+    let e3_dow = mask_dow
+    let e4_min = m_one
+    let e4_hour = m_one
+    let e4_day = mask_day
+    let e4_month = mask_month
+    let e4_dow = m_one
+    var fired = 0
+    i = 0
+    while i < DEFAULT_WORKLOAD do
+        let minute = i % 60
+        let hour = (i / 60) % 24
+        let day = (i / 1440) % 28 + 1
+        let month = (i / 40320) % 12 + 1
+        let dow = (i / 1440) % 7
+        let pm = pow2[minute as usize]
+        let ph = pow2[hour as usize]
+        let pd = pow2[day as usize]
+        let pmo = pow2[month as usize]
+        let pw = pow2[dow as usize]
+        if (e0_min & pm) != 0 and (e0_hour & ph) != 0 and (e0_day & pd) != 0 and (e0_month & pmo) != 0 and (e0_dow & pw) != 0 then
+            fired = fired + 1
+        end
+        if (e1_min & pm) != 0 and (e1_hour & ph) != 0 and (e1_day & pd) != 0 and (e1_month & pmo) != 0 and (e1_dow & pw) != 0 then
+            fired = fired + 1
+        end
+        if (e2_min & pm) != 0 and (e2_hour & ph) != 0 and (e2_day & pd) != 0 and (e2_month & pmo) != 0 and (e2_dow & pw) != 0 then
+            fired = fired + 1
+        end
+        if (e3_min & pm) != 0 and (e3_hour & ph) != 0 and (e3_day & pd) != 0 and (e3_month & pmo) != 0 and (e3_dow & pw) != 0 then
+            fired = fired + 1
+        end
+        if (e4_min & pm) != 0 and (e4_hour & ph) != 0 and (e4_day & pd) != 0 and (e4_month & pmo) != 0 and (e4_dow & pw) != 0 then
+            fired = fired + 1
+        end
+        i = i + 1
+    end
+    print("cron: ticks=", DEFAULT_WORKLOAD, "entries=", 5, "fired=", fired)
+end

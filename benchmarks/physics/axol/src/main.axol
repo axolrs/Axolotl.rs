@@ -1,0 +1,67 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/physics/axol/src/main.axol - 2D N-body gravity simulator (integer math, scaled)
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 100000
+const N_BODIES: Int = 50
+const SCALE: Int = 1000
+
+fn main()
+    var bx: [Int] = []
+    var by: [Int] = []
+    var bvx: [Int] = []
+    var bvy: [Int] = []
+    var bmass: [Int] = []
+    var i = 0
+    while i < N_BODIES do
+        let angle = (i * 31416) / N_BODIES
+        let r = 1000 + i * 50
+        bx.push((r * (angle - 7854)) / 5000)
+        by.push((r * (31416 - angle)) / 5000)
+        bvx.push(-(angle / 100) - 5)
+        bvy.push((angle / 100) + 5)
+        bmass.push(1000 + i * 100)
+        i = i + 1
+    end
+    var step = 0
+    while step < DEFAULT_WORKLOAD do
+        var i = 0
+        while i < N_BODIES do
+            var fx = 0
+            var fy = 0
+            let xi = bx[i as usize]
+            let yi = by[i as usize]
+            let mi = bmass[i as usize]
+            var j = 0
+            while j < N_BODIES do
+                if i != j then
+                    let dx = bx[j as usize] - xi
+                    let dy = by[j as usize] - yi
+                    let d2 = dx * dx + dy * dy + 1
+                    let f = bmass[j as usize] * mi / d2
+                    fx = fx + dx * f / d2
+                    fy = fy + dy * f / d2
+                end
+                j = j + 1
+            end
+            bvx[i as usize] = bvx[i as usize] + fx / mi * 10 / SCALE
+            bvy[i as usize] = bvy[i as usize] + fy / mi * 10 / SCALE
+            i = i + 1
+        end
+        i = 0
+        while i < N_BODIES do
+            bx[i as usize] = bx[i as usize] + bvx[i as usize] / SCALE
+            by[i as usize] = by[i as usize] + bvy[i as usize] / SCALE
+            i = i + 1
+        end
+        step = step + 1
+    end
+    var energy = 0
+    i = 0
+    while i < N_BODIES do
+        energy = energy + bmass[i as usize] * (bvx[i as usize] * bvx[i as usize] + bvy[i as usize] * bvy[i as usize]) / 2
+        i = i + 1
+    end
+    print("physics: steps=", DEFAULT_WORKLOAD, "bodies=", N_BODIES, "energy=", energy)
+end

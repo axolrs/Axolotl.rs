@@ -1,0 +1,76 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/git/axol/src/main.axol - content-addressed blob store with djb2 hashing
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 200000
+
+fn djb2(seed: Int, salt: Int) -> Int
+    var h = 5381
+    var x = seed
+    var j = 0
+    while j < 64 do
+        h = h * 33 + ((x + salt) & 4294967295)
+        x = x + 7
+        j = j + 1
+    end
+    return h & 9223372036854775807
+end
+
+fn main()
+    var blobs: [Int] = []
+    var trees: [Int] = []
+    var commits: [Int] = []
+    var last_commit = 0
+    var blob_buf: [Int] = []
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let h = djb2(i, i + 11)
+        blobs.push(h)
+        blob_buf.push(h)
+        if blob_buf.len() == 64 then
+            var sum = 0
+            var k = 0
+            while k < (blob_buf.len() as i64) do
+                sum = sum + blob_buf[k as usize]
+                k = k + 1
+            end
+            trees.push(sum)
+            let csum = sum * 31
+            commits.push(csum)
+            last_commit = (commits.len() as i64) - 1
+            blob_buf = []
+        end
+        i = i + 1
+    end
+    if blob_buf.len() > 0 then
+        var sum = 0
+        var k = 0
+        while k < (blob_buf.len() as i64) do
+            sum = sum + blob_buf[k as usize]
+            k = k + 1
+        end
+        trees.push(sum)
+        let csum = sum * 31
+        commits.push(csum)
+        last_commit = (commits.len() as i64) - 1
+    end
+    var acc = 0
+    var k = 0
+    while k < (commits.len() as i64) do
+        acc = acc + commits[k as usize]
+        k = k + 1
+    end
+    k = 0
+    while k < (trees.len() as i64) do
+        acc = acc - trees[k as usize]
+        k = k + 1
+    end
+    k = 0
+    while k < (blobs.len() as i64) do
+        acc = acc + blobs[k as usize]
+        k = k + 1
+    end
+    let checksum = acc & 9223372036854775807
+    print("git: blobs=", blobs.len(), "trees=", trees.len(), "commits=", commits.len(), "head=", last_commit, "checksum=", checksum)
+end

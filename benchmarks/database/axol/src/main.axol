@@ -1,0 +1,72 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/database/axol/src/main.axol - hash-indexed pager with leaf pages (flat layout)
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 100000
+const FANOUT: Int = 32
+const LEAF_CAP: Int = 256
+
+fn hash(key: Int) -> Int
+    return (key * 2654435761) & (FANOUT - 1)
+end
+
+fn main()
+    var leaf_keys: [Int] = []
+    var leaf_vals: [Int] = []
+    var leaf_counts: [Int] = []
+    var k = 0
+    while k < FANOUT * LEAF_CAP do
+        leaf_keys.push(0)
+        leaf_vals.push(0)
+        k = k + 1
+    end
+    k = 0
+    while k < FANOUT do
+        leaf_counts.push(0)
+        k = k + 1
+    end
+    var count = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let key = hash(i)
+        let slot = key & (FANOUT - 1)
+        let idx = slot * LEAF_CAP + leaf_counts[slot as usize]
+        if leaf_counts[slot as usize] < LEAF_CAP then
+            leaf_keys[idx as usize] = key
+            leaf_vals[idx as usize] = i + 7
+            leaf_counts[slot as usize] = leaf_counts[slot as usize] + 1
+            count = count + 1
+        end
+        i = i + 1
+    end
+    var hits = 0
+    i = 0
+    while i < DEFAULT_WORKLOAD do
+        let key = hash(i)
+        let slot = key & (FANOUT - 1)
+        var j = 0
+        var found = 0
+        while j < leaf_counts[slot as usize] do
+            if leaf_keys[(slot * LEAF_CAP + j) as usize] == key then
+                hits = hits + 1
+                found = 1
+                break
+            end
+            j = j + 1
+        end
+        i = i + 1
+    end
+    var csum = 0
+    var slot = 0
+    while slot < FANOUT do
+        var j = 0
+        while j < leaf_counts[slot as usize] do
+            csum = csum + leaf_keys[(slot * LEAF_CAP + j) as usize]
+            csum = csum + leaf_vals[(slot * LEAF_CAP + j) as usize]
+            j = j + 1
+        end
+        slot = slot + 1
+    end
+    print("database: slots=", FANOUT, "rows=", count, "hits=", hits, "checksum=", csum)
+end

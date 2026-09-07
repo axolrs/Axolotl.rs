@@ -1,0 +1,106 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/renderer/axol/src/main.axol - software 3D wireframe rasterizer with Bresenham line drawing
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 500
+const W: Int = 80
+const H: Int = 50
+
+fn main()
+    var verts_x: [Int] = [-1000, 1000, 1000, -1000, -1000, 1000, 1000, -1000]
+    var verts_y: [Int] = [-1000, -1000, 1000, 1000, -1000, -1000, 1000, 1000]
+    var verts_z: [Int] = [-1000, -1000, -1000, -1000, 1000, 1000, 1000, 1000]
+    var edges_a: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3]
+    var edges_b: [Int] = [1, 2, 3, 0, 5, 6, 7, 4, 4, 5, 6, 7]
+    var buf: [Int] = []
+    var k = 0
+    while k < W * H do
+        buf.push(0)
+        k = k + 1
+    end
+    var drawn = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        var k2 = 0
+        while k2 < (buf.len() as i64) do
+            buf[k2 as usize] = 0
+            k2 = k2 + 1
+        end
+        let angle = i * 10
+        let ca = 1000 - (angle * angle) / 2000000
+        let sa = angle - (angle * angle * angle) / 6000000
+        var px: [Int] = []
+        var py: [Int] = []
+        var kk = 0
+        while kk < 8 do
+            px.push(0)
+            py.push(0)
+            kk = kk + 1
+        end
+        kk = 0
+        while kk < 8 do
+            let xr = (verts_x[kk as usize] * ca - verts_z[kk as usize] * sa) / 1000
+            let zr = (verts_x[kk as usize] * sa + verts_z[kk as usize] * ca) / 1000 + 5
+            var zc = zr
+            if zc < 1 then zc = 1 end
+            px[kk as usize] = (xr * (W / 2) / zc) + (W / 2)
+            py[kk as usize] = (verts_y[kk as usize] * (H / 2) / zc) + (H / 2)
+            kk = kk + 1
+        end
+        var e = 0
+        while e < (edges_a.len() as i64) do
+            let x0 = px[edges_a[e as usize] as usize]
+            let y0 = py[edges_a[e as usize] as usize]
+            let x1 = px[edges_b[e as usize] as usize]
+            let y1 = py[edges_b[e as usize] as usize]
+            var dx = x1 - x0
+            if dx < 0 then dx = -dx end
+            var dy = y1 - y0
+            if dy < 0 then dy = -dy end
+            var sx = 1
+            if x0 >= x1 then sx = -1 end
+            var sy = 1
+            if y0 >= y1 then sy = -1 end
+            var err = dx - dy
+            var x = x0
+            var y = y0
+            var done = 0
+            while done == 0 do
+                if x >= 0 then
+                    if x < W then
+                        if y >= 0 then
+                            if y < H then
+                                buf[(y * W + x) as usize] = 1
+                            end
+                        end
+                    end
+                end
+                if x == x1 then
+                    if y == y1 then done = 1 end
+                end
+                if done == 0 then
+                    let e2 = 2 * err
+                    if e2 > -dy then
+                        err = err - dy
+                        x = x + sx
+                    end
+                    if e2 < dx then
+                        err = err + dx
+                        y = y + sy
+                    end
+                end
+            end
+            drawn = drawn + 1
+            e = e + 1
+        end
+        i = i + 1
+    end
+    var sum = 0
+    var k3 = 0
+    while k3 < (buf.len() as i64) do
+        sum = sum + buf[k3 as usize]
+        k3 = k3 + 1
+    end
+    print("renderer: frames=", DEFAULT_WORKLOAD, "edges_drawn=", drawn, "pixels=", sum)
+end

@@ -1,0 +1,10 @@
+[package]
+name = "axolc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+axolc-core = { version = "0.1.0-moss", path = "../axolc-core" }
+clap = { version = "4.6.6", features = ["derive"] }

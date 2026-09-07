@@ -1,0 +1,17 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: examples/fib.axol - recursive Fibonacci with a base-case guard.
+
+fn fib(n: Int) -> Int
+    if n < 2 then
+        return n
+    end
+    return fib(n - 1) + fib(n - 2)
+end
+
+fn main()
+    var i = 0
+    while i < 10 do
+        print(fib(i))
+        i = i + 1
+    end
+end

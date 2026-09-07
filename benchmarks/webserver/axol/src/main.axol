@@ -1,0 +1,38 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/webserver/axol/src/main.axol - HTTP/1.1 request dispatch simulator
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 100000
+
+fn main()
+    var route_hashes: [Int] = [100, 200, 300, 400, 500]
+    var route_status: [Int] = [200, 200, 200, 200, 404]
+    var path_hashes: [Int] = [100, 200, 300, 500, 400]
+    var hits_200 = 0
+    var hits_404 = 0
+    var total_body = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let ph = path_hashes[(i % 5) as usize]
+        var status = 404
+        var j = 0
+        while j < (route_hashes.len() as i64) do
+            if route_hashes[j as usize] == ph then
+                status = route_status[j as usize]
+                break
+            end
+            j = j + 1
+        end
+        var body_len = 7
+        if status == 200 then body_len = 2
+        else if status == 404 then body_len = 8
+        else if status == 500 then body_len = 12
+        end end end
+        if status == 200 then hits_200 = hits_200 + 1 end
+        if status == 404 then hits_404 = hits_404 + 1 end
+        total_body = total_body + body_len + (i % 5) + (i % 64)
+        i = i + 1
+    end
+    print("webserver: requests=", DEFAULT_WORKLOAD, "ok=", hits_200, "notfound=", hits_404, "bytes=", total_body)
+end

@@ -1,0 +1,9 @@
+{
+    "name": "blockchain-axol",
+    "version": "0.1.0",
+    "language": { "edition": "2026" },
+    "interpreted_dev_mode": false,
+    "scripts": {
+        "build": "axolc compile src/main.axol --out out.rs && rustc -O out.rs -o blockchain-axol"
+    }
+}

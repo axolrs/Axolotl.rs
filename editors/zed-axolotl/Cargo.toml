@@ -1,0 +1,14 @@
+[package]
+name = "zed-axolotl"
+version = "0.1.0-alpha"
+edition = "2024"
+license = "MIT OR APACHE-2.0"
+
+[dependencies]
+zed_extension_api = "0.7.0"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+# WASM Toolchain Configurations this crate isnt part of workspace crates on purpose because it requires wasm

@@ -1,0 +1,65 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/blockchain/axol/src/main.axol - proof-of-work chain with mine + verify across 100k blocks
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 2000
+const DIFFICULTY: Int = 4
+
+fn hash_block(prev: Int, data: Int, nonce: Int) -> Int
+    var h = prev + data * 2654435761 + nonce * 40503
+    h = h & 1152921504606846975
+    var k = 0
+    while k < 5 do
+        h = h + (h / 65536) * 31 + (h / 256) * 7
+        h = h & 1152921504606846975
+        k = k + 1
+    end
+    return h
+end
+
+fn main()
+    var b_data: [Int] = [0]
+    var b_nonce: [Int] = [0]
+    var b_hash: [Int] = [0]
+    var mask = 1
+    var k = 0
+    while k < DIFFICULTY do
+        mask = mask * 2
+        k = k + 1
+    end
+    mask = mask - 1
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let prev = b_hash[b_hash.len() as usize - 1]
+        var nonce = 0
+        var mined = 0
+        while mined == 0 do
+            let h = hash_block(prev, i, nonce)
+            if (h & mask) == 0 then
+                b_data.push(i)
+                b_nonce.push(nonce)
+                b_hash.push(h)
+                mined = 1
+            end
+            nonce = nonce + 1
+        end
+        i = i + 1
+    end
+    var verified = 1
+    i = 1
+    while i < (b_data.len() as i64) do
+        let prev = b_hash[(i - 1) as usize]
+        let h = hash_block(prev, b_data[i as usize], b_nonce[i as usize])
+        if h != b_hash[i as usize] then
+            verified = 0
+            break
+        end
+        if (h & mask) != 0 then
+            verified = 0
+            break
+        end
+        i = i + 1
+    end
+    print("blockchain: blocks=", b_data.len(), "verified=", verified, "last=", b_hash[b_hash.len() as usize - 1])
+end

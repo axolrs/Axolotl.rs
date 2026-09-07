@@ -1,0 +1,23 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/axol-analyzer",
+  "crates/axol-hot-runner",
+  "crates/axolc",
+  "crates/axolc-core",
+  "crates/axolc-testkit",
+  "crates/bucket",
+  "editors/zed-axolotl",
+]
+
+[workspace.package]
+version = "0.1.0-moss"
+edition = "2024"
+license = "MIT OR APACHE-2.0"
+authors = ["PascalElixir / axolrs"]
+repository = "https://github.com/axolrs/axolotl"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"

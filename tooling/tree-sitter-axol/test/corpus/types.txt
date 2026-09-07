@@ -1,0 +1,299 @@
+==================
+int_type
+==================
+
+fn f(x: Int) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+sized_int
+==================
+
+fn f(x: I64) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (type_identifier))))
+
+==================
+unsigned
+==================
+
+fn f(x: U32) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (type_identifier))))
+
+==================
+float_type
+==================
+
+fn f(x: Float) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+f64_type
+==================
+
+fn f(x: F64) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (type_identifier))))
+
+==================
+bool_type
+==================
+
+fn f(x: Bool) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+string_type
+==================
+
+fn f(x: String) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type))))
+
+==================
+optional_type
+==================
+
+fn f(x: Int?) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (optional_type
+        (primitive_type)))))
+
+==================
+array_type
+==================
+
+fn f(x: [Int]) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (array_type
+        element: (primitive_type)))))
+
+==================
+map_type
+==================
+
+fn f(x: Map<String, Int>) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (generic_type
+        name: (type_identifier)
+        type: (primitive_type)
+        type: (primitive_type)))))
+
+==================
+set_type
+==================
+
+fn f(x: Set<Int>) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (generic_type
+        name: (type_identifier)
+        type: (primitive_type)))))
+
+==================
+tuple_type
+==================
+
+fn f(x: (Int, String)) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (tuple_type
+        (primitive_type)
+        (primitive_type)))))
+
+==================
+borrow_type
+==================
+
+fn f(x: borrow String) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (borrow_type
+        (primitive_type)))))
+
+==================
+mut_type
+==================
+
+fn f(x: mut Player) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (mut_type
+        (type_identifier)))))
+
+==================
+move_type
+==================
+
+fn f(x: move Data) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (move_type
+        (type_identifier)))))
+
+==================
+ref_type
+==================
+
+fn f(x: &String) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (reference_type
+        (primitive_type)))))
+
+==================
+named_generic
+==================
+
+fn f(x: List<Int>) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (generic_type
+        name: (type_identifier)
+        type: (primitive_type)))))
+
+==================
+const_decl
+==================
+
+const MAX: Int = 100
+
+---
+
+(source_file
+  (const_declaration
+    name: (identifier)
+    type: (primitive_type)
+    value: (number
+      (integer))))
+
+==================
+type_alias
+==================
+
+type Point = (Int, Int)
+
+---
+
+(source_file
+  (type_alias
+    name: (identifier)
+    value: (tuple_type
+      (primitive_type)
+      (primitive_type))))

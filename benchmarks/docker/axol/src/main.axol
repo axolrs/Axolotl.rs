@@ -1,0 +1,77 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/docker/axol/src/main.axol - layer store + container lifecycle + cgroup accounting
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 50000
+
+fn main()
+    var layer_hash: [Int] = []
+    var layer_parent: [Int] = []
+    var image_top: [Int] = []
+    var c_pid: [Int] = []
+    var c_mem: [Int] = []
+    var c_alive: [Int] = []
+    var pids: [Int] = []
+    var next_pid = 1
+    var oom_kills = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        var parent = 0
+        if i % 7 == 0 then
+            parent = -1
+        else
+            parent = (i - 1) / 2
+        end
+        let content_hash = i * 2654435761
+        layer_hash.push(content_hash)
+        layer_parent.push(parent)
+        let layer_idx = (layer_hash.len() as i64) - 1
+        if i % 10 == 0 then
+            image_top.push(layer_idx)
+            let pid = next_pid
+            next_pid = next_pid + 1
+            c_pid.push(pid)
+            c_mem.push(1024)
+            c_alive.push(1)
+            pids.push(pid)
+        end
+        if pids.len() > 0 then
+            let pid = pids[(i % (pids.len() as i64)) as usize]
+            var j = 0
+            while j < (c_pid.len() as i64) do
+                if c_pid[j as usize] == pid then
+                    if c_alive[j as usize] == 1 then
+                        c_mem[j as usize] = c_mem[j as usize] + i * 8
+                        if c_mem[j as usize] > 1048576 then
+                            c_alive[j as usize] = 0
+                            oom_kills = oom_kills + 1
+                        end
+                        break
+                    end
+                end
+                j = j + 1
+            end
+        end
+        i = i + 1
+    end
+    var chain_sum = 0
+    var k = 0
+    while k < (image_top.len() as i64) do
+        var idx = image_top[k as usize]
+        while idx >= 0 do
+            chain_sum = chain_sum + layer_hash[idx as usize]
+            idx = layer_parent[idx as usize]
+        end
+        k = k + 1
+    end
+    var alive = 0
+    k = 0
+    while k < (c_alive.len() as i64) do
+        if c_alive[k as usize] == 1 then
+            alive = alive + 1
+        end
+        k = k + 1
+    end
+    print("docker: ops=", DEFAULT_WORKLOAD, "layers=", layer_hash.len(), "images=", image_top.len(), "containers=", alive, "oom_kills=", oom_kills, "chain=", chain_sum)
+end

@@ -1,0 +1,7 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: examples/hello.axol - string interpolation and the canonical first program.
+
+fn main()
+    let name = "Axolotl"
+    print("hello, ${name}!")
+end

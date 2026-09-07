@@ -1,0 +1,553 @@
+==================
+if_end
+==================
+
+fn main()
+    if x > 0 then
+        print(1)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (if_expression
+          condition: (binary_expression
+            left: (identifier)
+            right: (number
+              (integer)))
+          consequence: (block
+            (expression_statement
+              (call_expression
+                function: (identifier)
+                arguments: (arguments
+                  (number
+                    (integer)))))))))))
+
+==================
+if_elseif_else
+==================
+
+fn main()
+    if a then
+        print(1)
+    elseif b then
+        print(2)
+    else
+        print(3)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (if_expression
+          condition: (identifier)
+          consequence: (block
+            (expression_statement
+              (call_expression
+                function: (identifier)
+                arguments: (arguments
+                  (number
+                    (integer))))))
+          (elseif_clause
+            condition: (identifier)
+            consequence: (block
+              (expression_statement
+                (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (number
+                      (integer)))))))
+          (else_clause
+            alternative: (block
+              (expression_statement
+                (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (number
+                      (integer))))))))))))
+
+==================
+while_do
+==================
+
+fn main()
+    while i < 10 do
+        i = i + 1
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (while_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (number
+            (integer)))
+        body: (block
+          (assignment_statement
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number
+                (integer)))))))))
+
+==================
+repeat_until
+==================
+
+fn main()
+    repeat
+        print("x")
+    until done
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (repeat_statement
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (string)))))
+        condition: (identifier)))))
+
+==================
+numeric_for
+==================
+
+fn main()
+    for i in 10 do
+        print(i)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (for_statement
+        bindings: (identifier)
+        iterator: (number
+          (integer))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier)))))))))
+
+==================
+range_for
+==================
+
+fn main()
+    for i in 0..10 do
+        print(i)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (for_statement
+        bindings: (identifier)
+        iterator: (binary_expression
+          left: (number
+            (integer))
+          right: (number
+            (integer)))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier)))))))))
+
+==================
+inclusive_range
+==================
+
+fn main()
+    for i in 0..=9 do
+        print(i)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (for_statement
+        bindings: (identifier)
+        iterator: (binary_expression
+          left: (number
+            (integer))
+          right: (number
+            (integer)))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier)))))))))
+
+==================
+loop_break
+==================
+
+fn main()
+    loop
+        break
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (loop_statement
+        body: (block
+          (break_statement))))))
+
+==================
+continue_stmt
+==================
+
+fn main()
+    while true do
+        continue
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (while_statement
+        condition: (boolean)
+        body: (block
+          (continue_statement))))))
+
+==================
+match_literals
+==================
+
+fn main()
+    match x
+        1 => print(10)
+        2 => print(20)
+        _ => print(0)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          (match_arm
+            pattern: (number
+              (integer))
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (number
+                  (integer)))))
+          (match_arm
+            pattern: (number
+              (integer))
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (number
+                  (integer)))))
+          (match_arm
+            pattern: (wildcard_pattern)
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (number
+                  (integer))))))))))
+
+==================
+match_guard
+==================
+
+fn main()
+    match p
+        q if q.health <= 0 => die()
+        q => q.update(0.016)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          (match_arm
+            pattern: (identifier)
+            (match_guard
+              condition: (binary_expression
+                left: (field_expression
+                  object: (identifier)
+                  field: (identifier))
+                right: (number
+                  (integer))))
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments)))
+          (match_arm
+            pattern: (identifier)
+            body: (call_expression
+              function: (field_expression
+                object: (identifier)
+                field: (identifier))
+              arguments: (arguments
+                (number
+                  (float))))))))))
+
+==================
+match_tuple
+==================
+
+fn main()
+    match position
+        (0, 0) => print("origin")
+        other => print(other)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          (match_arm
+            pattern: (tuple_pattern
+              (number
+                (integer))
+              (number
+                (integer)))
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (string))))
+          (match_arm
+            pattern: (identifier)
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier)))))))))
+
+==================
+match_enum_pattern
+==================
+
+fn main()
+    match state
+        Menu => show_menu()
+        Playing(score) => tick(score)
+        _ => stop()
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          (match_arm
+            pattern: (identifier)
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments)))
+          (match_arm
+            pattern: (variant_pattern
+              name: (identifier)
+              (identifier))
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier))))
+          (match_arm
+            pattern: (wildcard_pattern)
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments))))))))
+
+==================
+nested_match
+==================
+
+fn main()
+    match x
+        1 => match y
+            2 => print(12)
+            _ => print(10)
+        end
+        _ => print(0)
+    end
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          (match_arm
+            pattern: (number
+              (integer))
+            body: (match_expression
+              value: (identifier)
+              (match_arm
+                pattern: (number
+                  (integer))
+                body: (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (number
+                      (integer)))))
+              (match_arm
+                pattern: (wildcard_pattern)
+                body: (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (number
+                      (integer)))))))
+          (match_arm
+            pattern: (wildcard_pattern)
+            body: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (number
+                  (integer))))))))))
+
+==================
+compound_assign
+==================
+
+fn main()
+    x += 1
+    y -= 2
+    z *= 3
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer)))
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer)))
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer))))))
+
+==================
+bitwise_assign
+==================
+
+fn main()
+    a &= 1
+    b |= 2
+    c ^= 3
+    d <<= 4
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer)))
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer)))
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer)))
+      (assignment_statement
+        left: (identifier)
+        right: (number
+          (integer))))))

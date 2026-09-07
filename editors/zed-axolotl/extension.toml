@@ -1,0 +1,15 @@
+id = "axolotl"
+name = "Axolotl"
+version = "0.1.0"
+schema_version = 1
+authors = ["PascalElixir / axolrs"]
+description = "Axolotl language support for Zed"
+repository = "https://github.com/axolrs/axolotl"
+
+[language_servers.axol-analyzer]
+name = "axol-analyzer"
+languages = ["Axolotl"]
+
+[grammars.axol]
+repository = "https://github.com/axolrs/axolotl"
+rev = "main"

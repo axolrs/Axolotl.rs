@@ -1,0 +1,42 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "axolotlgrammer",
+      "camelcase": "AxolotlGrammer",
+      "title": "Axolotl Grammer",
+      "scope": "source.axolotlgrammer",
+      "file-types": [
+        "axol"
+      ],
+      "injection-regex": "^axolotlgrammer$",
+      "class-name": "TreeSitterAxolotlgrammer"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0-alpha",
+    "license": "MIT",
+    "description": "Treesitter grammer for Axolotl Programming Language",
+    "authors": [
+      {
+        "name": "PascalElixir",
+        "email": "PascalElixir@proton.me",
+        "url": "https://github.com/axolrs/Axolotl.rs.git"
+      }
+    ],
+    "links": {
+      "repository": "",
+      "funding": ""
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "java": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": true
+  }
+}

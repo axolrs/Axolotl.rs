@@ -1,0 +1,146 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Axolotl",
+  "scopeName": "source.axol",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#char-literals" },
+    { "include": "#booleans" },
+    { "include": "#numbers" },
+    { "include": "#function-definitions" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.axol",
+          "begin": "--\\[\\[",
+          "end": "\\]\\]",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.comment.begin.axol" }
+          },
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.comment.end.axol" }
+          }
+        },
+        {
+          "name": "comment.line.double-dash.axol",
+          "match": "--.*$"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.axol",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.axol" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.axol" }
+      },
+      "patterns": [
+        { "include": "#string-escapes" },
+        { "include": "#string-interpolations" }
+      ]
+    },
+    "string-escapes": {
+      "name": "constant.character.escape.axol",
+      "match": "\\\\(?:[nrt0'\"\\\\]|x[0-9a-fA-F]{2}|u\\{[0-9a-fA-F]{1,6}\\})"
+    },
+    "string-interpolations": {
+      "name": "meta.embedded.line.axol",
+      "begin": "\\$\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin.axol" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end.axol" }
+      },
+      "patterns": [
+        { "include": "source.axol" }
+      ]
+    },
+    "char-literals": {
+      "name": "constant.character.axol",
+      "match": "'(?:\\\\(?:[nrt0'\"\\\\]|x[0-9a-fA-F]{2}|u\\{[0-9a-fA-F]{1,6}\\})|[^'\\\\\n])'"
+    },
+    "booleans": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.axol",
+          "match": "\\b(?:true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.axol",
+          "match": "\\bnil\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.axol",
+          "match": "\\b[0-9][0-9_]*\\.[0-9][0-9_]*(?:[eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.axol",
+          "match": "\\b[0-9][0-9_]*\\b"
+        }
+      ]
+    },
+    "function-definitions": {
+      "match": "\\bfn\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+      "captures": {
+        "0": { "name": "keyword.declaration.fn.axol" },
+        "1": { "name": "entity.name.function.axol" }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.axol",
+          "match": "\\b(?:if|then|else|elseif|end|while|for|do|return|match|case|break|continue|repeat|until|loop)\\b"
+        },
+        {
+          "name": "keyword.declaration.axol",
+          "match": "\\b(?:fn|let|var|const|struct|enum|interface|impl|type)\\b"
+        },
+        {
+          "name": "storage.modifier.axol",
+          "match": "\\b(?:pub|extern|unsafe)\\b"
+        },
+        {
+          "name": "keyword.other.axol",
+          "match": "\\b(?:use|async|await|spawn)\\b"
+        }
+      ]
+    },
+    "types": {
+      "name": "entity.name.type.axol",
+      "match": "\\b[A-Z][a-zA-Z0-9_]*\\b"
+    },
+    "operators": {
+      "name": "keyword.operator.axol",
+      "match": "=>|->|::|==|!=|<=|>=|&&|\\|\\||\\+=|-=|\\*=|/=|%=|\\.\\.\\.|[+\\-*/%<>=!&|^~?.]"
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.axol",
+          "match": "[,;]"
+        },
+        {
+          "name": "punctuation.definition.bracket.axol",
+          "match": "[{}()\\[\\]]"
+        }
+      ]
+    }
+  }
+}

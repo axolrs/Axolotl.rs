@@ -1,0 +1,45 @@
+# Owner: PascalElixir / axolrs (GitHub org)
+# File: .github/workflows/actions.yaml — reusable setup workflow shared by the CI family.
+name: Shared Setup
+
+on:
+  workflow_call:
+    inputs:
+      run-tests:
+        description: 'Whether to run the workspace test suite after setup'
+        required: false
+        default: 'false'
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Rust toolchain (stable)
+        uses: dtolnay/rust-toolchain@stable
+      - name: pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - name: Node.js (LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+          cache-dependency-path: axolsite/pnpm-lock.yaml
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Workspace test suite (optional)
+        if: ${{ inputs.run-tests == 'true' }}
+        run: cargo test --workspace --no-fail-fast

@@ -1,0 +1,349 @@
+==================
+empty_source
+==================
+
+
+---
+
+(source_file)
+
+==================
+hello_fn
+==================
+
+fn main()
+    print("hello")
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (string)))))))
+
+==================
+let_int
+==================
+
+fn main()
+    let x = 42
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (number
+          (integer))))))
+
+==================
+var_bool
+==================
+
+fn main()
+    var flag = true
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (var_statement
+        pattern: (identifier)
+        value: (boolean)))))
+
+==================
+line_comment
+==================
+
+-- a comment
+fn main() end
+
+---
+
+(source_file
+  (comment)
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)))
+
+==================
+block_comment
+==================
+
+--[[ block comment ]]
+fn main() end
+
+---
+
+(source_file
+  (block_comment)
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)))
+
+==================
+float_literal
+==================
+
+fn main() let x = 3.14 end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (number
+          (float))))))
+
+==================
+hex_literal
+==================
+
+fn main() let x = 0xFF end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (number
+          (integer))))))
+
+==================
+underscore_number
+==================
+
+fn main() let x = 1_000_000 end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (number
+          (integer))))))
+
+==================
+string_escape
+==================
+
+fn main() let s = "a\nb\t\\\"" end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (string
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence))))))
+
+==================
+interpolated_string
+==================
+
+fn main() let s = "count: ${x}" end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (string
+          (string_interpolation
+            value: (identifier)))))))
+
+==================
+raw_string
+==================
+
+fn main() let s = `raw $string` end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (raw_string)))))
+
+==================
+char_literal
+==================
+
+fn main() let c = 'a' end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (char_literal)))))
+
+==================
+null_literal
+==================
+
+fn main() let x = null end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (null)))))
+
+==================
+nil_literal
+==================
+
+fn main() let x = nil end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (nil)))))
+
+==================
+tuple_expr
+==================
+
+fn main() let t = (1, 2, 3) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (tuple_expression
+          (number
+            (integer))
+          (number
+            (integer))
+          (number
+            (integer)))))))
+
+==================
+array_expr
+==================
+
+fn main() let a = [1, 2, 3] end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (array_expression
+          (number
+            (integer))
+          (number
+            (integer))
+          (number
+            (integer)))))))
+
+==================
+record_literal
+==================
+
+fn main() let c = { host = "localhost", port = 8080 } end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (record_expression
+          (record_field
+            name: (identifier)
+            value: (string))
+          (record_field
+            name: (identifier)
+            value: (number
+              (integer))))))))
+
+==================
+pipe_forward
+==================
+
+fn main() let y = x |> f end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (identifier))))))

@@ -1,0 +1,148 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/regexengine/axol/src/main.axol - NFA regex matcher with literal-char patterns.
+--
+-- Mirrors ../rust/src/main.rs exactly. Avoids Vec<Vec<Int>> indexing
+-- by using 5 explicit branches (axolc cannot move out of indexed Vec).
+
+const DEFAULT_WORKLOAD: Int = 40
+
+fn subject_byte(sub_id: Int, idx: Int) -> Int
+    if sub_id == 0 then
+        if idx == 0 then return 97 end
+        if idx == 1 then return 98 end
+        if idx == 2 then return 99 end
+    end
+    if sub_id == 1 then
+        if idx == 0 then return 120 end
+        if idx == 1 then return 121 end
+        if idx == 2 then return 122 end
+    end
+    if sub_id == 2 then
+        if idx == 0 then return 104 end
+        if idx == 1 then return 101 end
+        if idx == 2 then return 108 end
+        if idx == 3 then return 108 end
+        if idx == 4 then return 111 end
+    end
+    if sub_id == 3 then
+        if idx == 0 then return 116 end
+        if idx == 1 then return 101 end
+        if idx == 2 then return 115 end
+        if idx == 3 then return 116 end
+    end
+    if sub_id == 4 then
+        if idx == 0 then return 114 end
+        if idx == 1 then return 117 end
+        if idx == 2 then return 115 end
+        if idx == 3 then return 116 end
+    end
+    if sub_id == 5 then
+        if idx == 0 then return 1 end
+        if idx == 1 then return 2 end
+        if idx == 2 then return 3 end
+    end
+    if sub_id == 6 then
+        if idx == 0 then return 97 end
+        if idx == 1 then return 98 end
+        if idx == 2 then return 99 end
+        if idx == 3 then return 100 end
+    end
+    if sub_id == 7 then
+        if idx == 0 then return 104 end
+        if idx == 1 then return 101 end
+        if idx == 2 then return 108 end
+        if idx == 3 then return 108 end
+        if idx == 4 then return 111 end
+        if idx == 5 then return 33 end
+    end
+    return -1
+end
+
+fn subject_len(sub_id: Int) -> Int
+    if sub_id == 0 then return 3 end
+    if sub_id == 1 then return 3 end
+    if sub_id == 2 then return 5 end
+    if sub_id == 3 then return 4 end
+    if sub_id == 4 then return 4 end
+    if sub_id == 5 then return 3 end
+    if sub_id == 6 then return 4 end
+    if sub_id == 7 then return 6 end
+    return 0
+end
+
+fn match_at_subject(sub_id: Int, pat_id: Int) -> Int
+    var line_len = subject_len(sub_id)
+    var pat_len = 0
+    if pat_id == 0 then pat_len = 3 end
+    if pat_id == 1 then pat_len = 3 end
+    if pat_id == 2 then pat_len = 5 end
+    if pat_id == 3 then pat_len = 4 end
+    if pat_id == 4 then pat_len = 4 end
+    var i = 0
+    while i < line_len do
+        if i + pat_len > line_len then return 0 end
+        var ok = 1
+        var j = 0
+        while j < pat_len do
+            var line_ch = subject_byte(sub_id, i + j)
+            var pat_ch = 0
+            if pat_id == 0 then
+                if j == 0 then pat_ch = 97 end
+                if j == 1 then pat_ch = 98 end
+                if j == 2 then pat_ch = 99 end
+            end
+            if pat_id == 1 then
+                if j == 0 then pat_ch = 120 end
+                if j == 1 then pat_ch = 121 end
+                if j == 2 then pat_ch = 122 end
+            end
+            if pat_id == 2 then
+                if j == 0 then pat_ch = 104 end
+                if j == 1 then pat_ch = 101 end
+                if j == 2 then pat_ch = 108 end
+                if j == 3 then pat_ch = 108 end
+                if j == 4 then pat_ch = 111 end
+            end
+            if pat_id == 3 then
+                if j == 0 then pat_ch = 116 end
+                if j == 1 then pat_ch = 101 end
+                if j == 2 then pat_ch = 115 end
+                if j == 3 then pat_ch = 116 end
+            end
+            if pat_id == 4 then
+                if j == 0 then pat_ch = 114 end
+                if j == 1 then pat_ch = 117 end
+                if j == 2 then pat_ch = 115 end
+                if j == 3 then pat_ch = 116 end
+            end
+            if line_ch != pat_ch then
+                ok = 0
+                break
+            end
+            j = j + 1
+        end
+        if ok == 1 then return 1 end
+        i = i + 1
+    end
+    return 0
+end
+
+
+fn main()
+    var matches = 0
+    var runs = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        var pat_id = i % 5
+        var s_idx = 0
+        while s_idx < 8 do
+            runs = runs + 1
+            if match_at_subject(s_idx, pat_id) == 1 then
+                matches = matches + 1
+            end
+            s_idx = s_idx + 1
+        end
+        i = i + 1
+    end
+    print("regexengine: patterns=", DEFAULT_WORKLOAD, "runs=", runs, "matches=", matches)
+end

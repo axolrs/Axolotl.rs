@@ -1,0 +1,161 @@
+const DEFAULT_WORKLOAD: Int = 5000
+
+fn main()
+    var font: [Int] = [240, 144, 144, 144, 240, 32, 96, 32, 32, 112, 240, 16, 240, 128, 240, 240]
+    var mem: [Int] = []
+    var k = 0
+    while k < 4096 do
+        if k < 16 then
+            mem.push(font[k as usize])
+        else
+            mem.push(0)
+        end
+        k = k + 1
+    end
+    var v: [Int] = []
+    k = 0
+    while k < 16 do
+        v.push(0)
+        k = k + 1
+    end
+    var i_reg = 0
+    var pc = 0
+    var cycles = 0
+    var stack: [Int] = []
+    var j = 0
+    while j < DEFAULT_WORKLOAD do
+        var op = 4660
+        let m = j % 16
+        if m == 0 then op = 24832 | (j & 255) end
+        if m == 1 then op = 29184 | (j & 255) end
+        if m == 2 then op = 33040 end
+        if m == 3 then op = 33043 end
+        if m == 4 then op = 33044 end
+        if m == 5 then op = 12289 end
+        if m == 6 then op = 16386 end
+        if m == 7 then op = 40960 | (j & 4095) end
+        if m == 8 then op = 53269 end
+        if m == 9 then op = 28673 end
+        if m == 10 then op = 32772 end
+        if m == 11 then op = 12291 end
+        if m == 12 then op = 61461 end
+        if m == 13 then op = 61507 end
+        if m == 14 then op = 238 end
+        let nib0 = (op / 4096) & 15
+        let nib1 = (op / 256) & 15
+        let nib2 = (op / 16) & 15
+        let nib3 = op & 15
+        let nnn = op & 4095
+        let nn = op & 255
+        let x = nib1
+        let y = nib2
+        var handled = 0
+        if op == 238 then
+            if stack.len() > 0 then
+                var sp = stack.len()
+                var idx = sp - 1
+                pc = stack[idx as usize]
+            end
+            handled = 1
+        end
+        if handled == 0 then
+            if nib0 == 1 then
+                pc = nnn
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 2 then
+                stack.push(pc)
+                pc = nnn
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 3 then
+                if v[x as usize] == nn then pc = pc + 2 end
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 4 then
+                if v[x as usize] != nn then pc = pc + 2 end
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 6 then
+                v[x as usize] = nn
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 7 then
+                v[x as usize] = (v[x as usize] + nn) & 255
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 8 then
+                if nib3 == 0 then
+                    v[x as usize] = v[y as usize]
+                end
+                if nib3 == 1 then
+                    v[x as usize] = (v[x as usize] | v[y as usize]) & 255
+                end
+                if nib3 == 2 then
+                    v[x as usize] = (v[x as usize] & v[y as usize]) & 255
+                end
+                if nib3 == 4 then
+                    let s = v[x as usize] + v[y as usize]
+                    if s > 255 then
+                        v[15 as usize] = 1
+                    else
+                        v[15 as usize] = 0
+                    end
+                    v[x as usize] = s & 255
+                end
+                if nib3 == 6 then
+                    let b = v[x as usize] & 1
+                    v[x as usize] = (v[x as usize] / 2) & 255
+                    v[15 as usize] = b
+                end
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 10 then
+                i_reg = nnn
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if nib0 == 15 then
+                if nn == 85 then
+                    var kk = 0
+                    while kk <= x do
+                        mem[(i_reg + kk) as usize] = v[kk as usize]
+                        kk = kk + 1
+                    end
+                end
+                if nn == 101 then
+                    var kk = 0
+                    while kk <= x do
+                        v[kk as usize] = mem[(i_reg + kk) as usize]
+                        kk = kk + 1
+                    end
+                end
+                handled = 1
+            end
+        end
+        cycles = cycles + 1
+        j = j + 1
+    end
+    var csum = 0
+    k = 0
+    while k < 16 do
+        csum = csum * 31 + v[k as usize]
+        k = k + 1
+    end
+    print("emulator: cycles=", cycles, "v0=", v[0], "i=", i_reg, "checksum=", csum)
+end

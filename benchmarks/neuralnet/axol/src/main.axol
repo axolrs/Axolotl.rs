@@ -1,0 +1,91 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/neuralnet/axol/src/main.axol - feedforward neural network with flattened weight arrays
+--
+-- Mirrors ../rust/src/main.rs exactly. Optimized for axolc codegen.
+
+const DEFAULT_WORKLOAD: Int = 50000
+const N_IN: Int = 8
+const N_HIDDEN: Int = 16
+const N_OUT: Int = 4
+
+fn hash_seed(s: Int) -> Int
+    return s * 2654435761 + (s / 65536)
+end
+
+fn main()
+    var w1: [Int] = []
+    var b1: [Int] = []
+    var w2: [Int] = []
+    var b2: [Int] = []
+    var i = 0
+    while i < N_HIDDEN do
+        var j = 0
+        while j < N_IN do
+            let s = hash_seed(42 + i * 31 + j)
+            w1.push((s & 1023) - 512)
+            j = j + 1
+        end
+        b1.push((hash_seed(1000 + i) & 1023) - 512)
+        i = i + 1
+    end
+    i = 0
+    while i < N_OUT do
+        var j = 0
+        while j < N_HIDDEN do
+            let s = hash_seed(819 + i * 31 + j)
+            w2.push((s & 1023) - 512)
+            j = j + 1
+        end
+        b2.push((hash_seed(2000 + i) & 1023) - 512)
+        i = i + 1
+    end
+    var input: [Int] = []
+    var k = 0
+    while k < N_IN do
+        input.push(0)
+        k = k + 1
+    end
+    var hidden: [Int] = []
+    k = 0
+    while k < N_HIDDEN do
+        hidden.push(0)
+        k = k + 1
+    end
+    var sum = 0
+    k = 0
+    while k < DEFAULT_WORKLOAD do
+        var j = 0
+        while j < N_IN do
+            input[j as usize] = (k + j) & 1023
+            j = j + 1
+        end
+        var i2 = 0
+        while i2 < N_HIDDEN do
+            var acc = b1[i2 as usize]
+            let base = i2 * N_IN
+            var j2 = 0
+            while j2 < N_IN do
+                acc = acc + w1[(base + j2) as usize] * input[j2 as usize]
+                j2 = j2 + 1
+            end
+            if acc > 32767 then acc = 32767 end
+            if acc < -32768 then acc = -32768 end
+            hidden[i2 as usize] = acc
+            i2 = i2 + 1
+        end
+        i2 = 0
+        while i2 < N_OUT do
+            var acc = b2[i2 as usize]
+            let base = i2 * N_HIDDEN
+            var j2 = 0
+            while j2 < N_HIDDEN do
+                acc = acc + w2[(base + j2) as usize] * hidden[j2 as usize]
+                j2 = j2 + 1
+            end
+            sum = sum + acc
+            i2 = i2 + 1
+        end
+        k = k + 1
+    end
+    print("neuralnet: forwards=", DEFAULT_WORKLOAD, "sum=", sum, "in=", N_IN)
+end

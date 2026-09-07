@@ -1,0 +1,68 @@
+const DEFAULT_WORKLOAD: Int = 2000
+const ROWS: Int = 10000
+
+fn main()
+    var row_lens: [Int] = []
+    var row_hashes: [Int] = []
+    var i = 0
+    while i < ROWS do
+        row_lens.push(16)
+        row_hashes.push(i * 31 + 7)
+        i = i + 1
+    end
+    i = 0
+    while i < DEFAULT_WORKLOAD do
+        let r = i % ROWS
+        let c = i % 80
+        let m = i % 5
+        var handled = 0
+        if m == 0 then
+            row_lens[r as usize] = row_lens[r as usize] + 1
+            row_hashes[r as usize] = row_hashes[r as usize] * 31 + 120
+            handled = 1
+        end
+        if handled == 0 then
+            if m == 1 then
+                if row_lens[r as usize] > c then
+                    row_lens[r as usize] = row_lens[r as usize] - 1
+                    row_hashes[r as usize] = row_hashes[r as usize] / 31
+                end
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if m == 2 then
+                let n = row_lens[r as usize]
+                var k = c
+                if k > n then k = n end
+                row_lens[r as usize] = k
+                row_lens.push(n - k)
+                row_hashes.push(row_hashes[r as usize] * 7)
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            if m == 3 then
+                if row_lens.len() > 1 then
+                    row_lens[r as usize] = 0
+                    row_hashes[r as usize] = 0
+                end
+                handled = 1
+            end
+        end
+        if handled == 0 then
+            row_lens[r as usize] = row_lens[r as usize] + 1
+            row_hashes[r as usize] = row_hashes[r as usize] * 31 + 122
+        end
+        i = i + 1
+    end
+    var total_bytes = 0
+    var h = 0
+    var k = 0
+    while k < (row_lens.len() as i64) do
+        total_bytes = total_bytes + row_lens[k as usize]
+        h = h * 31 + row_hashes[k as usize]
+        k = k + 1
+    end
+    print("texteditor: ops=", DEFAULT_WORKLOAD, "rows=", row_lens.len(), "bytes=", total_bytes, "checksum=", h)
+end

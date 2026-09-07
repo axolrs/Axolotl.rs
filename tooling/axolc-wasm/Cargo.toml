@@ -1,0 +1,16 @@
+[package]
+name = "axolc-wasm"
+version = "0.1.0-moss"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+authors = ["PascalElixir / axolrs"]
+description = "Flat C-ABI wasm bindings exposing the axolc compiler front-end for the browser playground."
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+axolc-core = { path = "../../crates/axolc-core" }
+serde_json = "1.0.151"
+
+[workspace]

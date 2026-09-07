@@ -1,0 +1,340 @@
+==================
+fn_no_args
+==================
+
+fn f() end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)))
+
+==================
+fn_typed_params
+==================
+
+fn add(a: Int, b: Int) -> Int
+    return a + b
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type)
+      name: (identifier)
+      type: (primitive_type))
+    (return_type
+      (primitive_type))
+    body: (block
+      (return_statement
+        value: (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+==================
+pub_fn
+==================
+
+pub fn exported() end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)))
+
+==================
+async_fn
+==================
+
+async fn work() end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)))
+
+==================
+extern_fn
+==================
+
+extern fn SDL_Init(flags: U32) -> Int
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (type_identifier))
+    (return_type
+      (primitive_type))))
+
+==================
+generic_fn
+==================
+
+fn identity<T>(x: T) -> T
+    return x
+end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    type_parameters: (type_parameters
+      (identifier))
+    parameters: (parameters
+      name: (identifier)
+      type: (type_identifier))
+    (return_type
+      (type_identifier))
+    body: (block
+      (return_statement
+        value: (identifier)))))
+
+==================
+default_param
+==================
+
+fn greet(name = "world") end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      default: (string))))
+
+==================
+named_call
+==================
+
+fn main() f(x: 1, y: 2) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (named_argument
+              name: (identifier)
+              value: (number
+                (integer)))
+            (named_argument
+              name: (identifier)
+              value: (number
+                (integer)))))))))
+
+==================
+closure_fn_expr
+==================
+
+fn main() let f = fn(x) return x * 2 end end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (function_expression
+          parameters: (parameters
+            name: (identifier))
+          body: (block
+            (return_statement
+              value: (binary_expression
+                left: (identifier)
+                right: (number
+                  (integer))))))))))
+
+==================
+bar_closure
+==================
+
+fn main() let f = |x| x + 1 end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (short_closure
+          (identifier)
+          body: (binary_expression
+            left: (identifier)
+            right: (number
+              (integer))))))))
+
+==================
+call_chain
+==================
+
+fn main() a(b(c(1))) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (number
+                      (integer))))))))))))
+
+==================
+method_def
+==================
+
+Point.sum = fn(self, x: Int) -> Int
+    return self.x + x
+end
+
+---
+
+(source_file
+  (method_definition
+    type: (identifier)
+    name: (identifier)
+    parameters: (parameters
+      (self_parameter)
+      name: (identifier)
+      type: (primitive_type))
+    (return_type
+      (primitive_type))
+    body: (block
+      (return_statement
+        value: (binary_expression
+          left: (field_expression
+            object: (self_expression)
+            field: (identifier))
+          right: (identifier))))))
+
+==================
+static_method
+==================
+
+Vec3 = fn new(x: Int, y: Int)
+    return Vec3 { x = x, y = y }
+end
+
+---
+
+(source_file
+  (static_method_definition
+    type: (identifier)
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      type: (primitive_type)
+      name: (identifier)
+      type: (primitive_type))
+    body: (block
+      (return_statement
+        value: (struct_expression
+          type: (identifier)
+          (record_field
+            name: (identifier)
+            value: (identifier))
+          (record_field
+            name: (identifier)
+            value: (identifier)))))))
+
+==================
+method_call_dot
+==================
+
+fn main() p.damage(20) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (field_expression
+            object: (identifier)
+            field: (identifier))
+          arguments: (arguments
+            (number
+              (integer))))))))
+
+==================
+method_call_colon
+==================
+
+fn main() p:damage(20) end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (colon_method_call_expression
+          object: (identifier)
+          method: (identifier)
+          arguments: (arguments
+            (number
+              (integer))))))))
+
+==================
+await_expr
+==================
+
+fn main() let r = await fetch() end
+
+---
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (await_expression
+          value: (call_expression
+            function: (identifier)
+            arguments: (arguments)))))))

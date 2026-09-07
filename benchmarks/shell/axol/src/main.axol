@@ -1,0 +1,30 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/shell/axol/src/main.axol - POSIX-like shell token pipeline simulator
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 30000
+
+fn main()
+    var log: [Int] = []
+    var args_total = 0
+    var redirects_total = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        let n_stages = (i % 4) + 1
+        let n_args = (i % 5) + 1
+        let n_redirects = i % 3
+        let signature = n_stages * 1000 + n_args * 10 + n_redirects
+        log.push(signature)
+        args_total = args_total + n_args
+        redirects_total = redirects_total + n_redirects
+        i = i + 1
+    end
+    var h = 0
+    var k = 0
+    while k < (log.len() as i64) do
+        h = h * 31 + log[k as usize]
+        k = k + 1
+    end
+    print("shell: lines=", DEFAULT_WORKLOAD, "stages=", log.len(), "args=", args_total, "redirects=", redirects_total, "checksum=", h)
+end

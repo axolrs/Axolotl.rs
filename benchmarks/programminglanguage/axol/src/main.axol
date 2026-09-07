@@ -1,0 +1,28 @@
+-- Owner: PascalElixir / axolrs (GitHub org)
+-- File: benchmarks/programminglanguage/axol/src/main.axol - stack-based VM running a factorial-like program
+--
+-- Mirrors ../rust/src/main.rs exactly. Uses only axolc-supported syntax.
+
+const DEFAULT_WORKLOAD: Int = 10000
+
+fn main()
+    var sum = 0
+    var i = 0
+    while i < DEFAULT_WORKLOAD do
+        var n = i % 12
+        if n == 0 then n = 1 end
+        var stack: [Int] = []
+        var acc = 1
+        var k = 1
+        while k <= n do
+            acc = acc * k
+            stack.push(acc)
+            k = k + 1
+        end
+        if stack.len() > 0 then
+            sum = sum + stack[stack.len() as usize - 1]
+        end
+        i = i + 1
+    end
+    print("programminglanguage: forms=", DEFAULT_WORKLOAD, "sum=", sum)
+end
